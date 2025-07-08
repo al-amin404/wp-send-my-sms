@@ -27,8 +27,9 @@ $wpsms_options = get_option('wpsms_api_options');
         <br>
 
         <div>
-            <h2>Write Message</h2>
-            <form action="">
+            <h2>Write a Message</h2>
+            <p><?= $_GET['msg'] ?? ''  ?></p>
+            <form action="<?= admin_url('admin-post.php')?>" method="post">
                 <table class="form-table">
                     <tr>
                         <th scope="row">
@@ -38,7 +39,12 @@ $wpsms_options = get_option('wpsms_api_options');
                     </tr>
                     <tr>
                         <th scope="row">Message</th>
-                        <td><textarea name="wpsms-text-message" maxlength="255"></textarea></td>
+                        <td><textarea name="wpsms-custom-text" maxlength="255"></textarea></td>
+                    </tr>
+                    <tr>
+                        <input type="hidden" name="action" value="wpsms_send_sms">
+                        <?php wp_nonce_field('wpsms_send_sms_nonce', 'wpsms_send_sms_nonce') ?>
+                        <td><button type="submit" class="button button-primary">Send Message</button></td>
                     </tr>
                 </table>
             </form>
