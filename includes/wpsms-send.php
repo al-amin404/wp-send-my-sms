@@ -35,7 +35,10 @@ $wpsms_options = get_option('wpsms_api_options');
                         <th scope="row">
                             Receiver Mobile:
                         </th>
-                        <td><input type="tel" maxlength="11" name="wpsms-rv-mobile" required></td>
+                        <td>
+                            <input type="tel" name="wpsms-rv-mobile" required><br>
+                            <div style="margin-top: 10px ;"><input type="checkbox" name="bulk-sms" id=""><span>Send Bulk SMS</span></div>
+                        </td>
                     </tr>
                     <tr>
                         <th scope="row">Message</th>
