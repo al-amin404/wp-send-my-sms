@@ -37,7 +37,10 @@ $wpsms_options = get_option('wpsms_api_options');
                         </th>
                         <td>
                             <input type="tel" name="wpsms-rv-mobile" required><br>
-                            <div style="margin-top: 10px ;"><input type="checkbox" name="bulk-sms" id=""><span>Send Bulk SMS</span></div>
+                            <div style="margin-top: 10px ;">
+                                <input type="checkbox" name="bulk-sms" id=""><span>Send Bulk SMS</span><br>
+                                <p style="font-size: 12px; margin-top: 10px;">Use <code>,</code> to seperate each number. (ex. <code>01912345678, 01524536578, ...</code> )</p>
+                            </div>
                         </td>
                     </tr>
                     <tr>
