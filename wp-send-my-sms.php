@@ -20,6 +20,16 @@ function wpsms_admin_panel_menu() {
         'wpsms_admin_panel_content',
         'dashicons-email'
     );
+    
+    add_submenu_page(
+        'wpsms-send-my-sms',
+        __('Wocommerce order SMS','wp-send-my-sms'),
+        __('WC Order SMS','wp-send-my-sms'),
+        'manage_options',
+        'wpsms-send-wc-order-sms',
+        'wpsms_send_wc_order_sms',
+        2
+    );
 
     add_submenu_page(
         'wpsms-send-my-sms',
@@ -28,7 +38,7 @@ function wpsms_admin_panel_menu() {
         'manage_options',
         'wpsms-send-sms-settings',
         'wpsms_send_sms_admin_settings',
-        2
+        3
     );
 }
 
@@ -37,6 +47,8 @@ add_action('admin_menu','wpsms_admin_panel_menu');
 function wpsms_admin_panel_content() {
     include_once (plugin_dir_path( __FILE__ ) .'includes/wpsms-send.php');
 }
+
+include_once (plugin_dir_path( __FILE__ ) .'includes/wpsms-send-wc-order-sms.php');
 
 
 function wpsms_send_sms_admin_settings() {
@@ -64,6 +76,7 @@ function wpsms_api_options_save() {
     update_option('wpsms_api_options', $wpsms_options);
 
     wp_safe_redirect( admin_url('admin.php?page=wpsms-send-my-sms') );
+    exit;
 }
 
 add_action('admin_post_wpsms_api_options','wpsms_api_options_save');
@@ -120,8 +133,10 @@ function wpsms_send_custom_sms() {
 
     if($status == 'OK') {
         wp_safe_redirect(admin_url('admin.php?page=wpsms-send-my-sms&msg='. $msg));
+        exit;
     } else {
         wp_safe_redirect(admin_url('admin.php?page=wpsms-send-my-sms&msg='. $msg));
+        exit;
     }
 }
 
