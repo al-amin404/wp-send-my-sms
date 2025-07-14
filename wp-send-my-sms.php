@@ -1,10 +1,13 @@
 <?php
 /**
  * Plugin Name: WP Send My SMS
- * Description: A Simple plugin to send order status sms using "Send My SMS" API
+ * Plugin URI: https://github.com/al-amin404/wp-send-my-sms
+ * Description: A Simple plugin to send order status sms notification using the "Send My SMS" API
  * Author: Al Amin
+ * Author URI: https://github.com/al-amin404/
  * Version: 1.0.0
  * License: GPL-2
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: wp-send-my-sms
  */
 
@@ -89,7 +92,9 @@ function wpsms_send_custom_sms() {
         wp_die('Error security varification');
     }
 
-    $customSmsText = sanitize_text_field($_POST['wpsms-custom-text']);
+    $customSmsText = wp_kses($_POST['wpsms-custom-text'], [
+        'br' => []
+    ]);
     $api_key = get_option('wpsms_api_options')['api_key'];
     $api_user = get_option('wpsms_api_options')['api_username'];
 
