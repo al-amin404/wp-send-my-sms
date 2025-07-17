@@ -3,13 +3,21 @@
 function wpsms_order_sms_template_option_save() {
     if(!isset($_POST['wpsms_send_sms_nonce']) || !wp_verify_nonce($_POST['wpsms_send_sms_nonce'], 'wpsms_send_sms_nonce')) {
         wp_die('Error security varification');
-    }
+    };
+
+    $status_templates = function() {
+        $templates = [];
+        foreach(wc_get_order_statuses() as $status_slug => $status_label) {
+            $templates['enable_sms_'.$status_slug] = isset($_POST['enable-sms-'. $status_slug]) ? '1' : '0';
+            $templates[$status_slug] = wp_kses($_POST['wpsms-order-sms-template-' . $status_slug], ['br' => []]);
+        };
+        return $templates;
+    };
 
     $order_sms_template_options = [
-        'enable_wc_order_sms' => isset($_POST['enable-order-sms']) ? '1' : '0',
-        'wpsms_order_sms_template' => sanitize_text_field($_POST['wpsms-order-sms-template'])
+        'wpsms_order_sms_templates' => $status_templates()
     ];
-
+    
     update_option('wpsms_sms_template_option', $order_sms_template_options);
 
     wp_safe_redirect( admin_url('admin.php?page=wpsms-send-wc-order-sms') );
@@ -18,25 +26,38 @@ function wpsms_order_sms_template_option_save() {
 
 add_action("admin_post_wpsms_order_sms_template_option","wpsms_order_sms_template_option_save");
 
-function wpsms_send_wc_order_sms($wpsms_template_option) { 
+function wpsms_send_wc_order_sms($wpsms_template_option) {
+
+    $active_plugins = get_option('active_plugins');
+    if(!in_array('woocommerce/woocommerce.php', $active_plugins)) {
+        echo "<div class='wrap'><h3>Install and Activate the Woocommerce plugin to use order notification SMS feature.</h3></div>";
+        echo"<a href='". admin_url('plugin-install.php') ."' class='button button-primary' style='margin-top: 10px;'>Install Plugin</a>";
+        exit;
+    }
+
     $wpsms_template_option = get_option('wpsms_sms_template_option');
+    $order_statuses = wc_get_order_statuses();
+
     ?>
     <div class="wrap">
         <h1>WC Order Status SMS Notification</h1>
         <form action="<?= admin_url('admin-post.php')?>" method="post">
             <table class="form-table">
                 <tr>
-                    <th scope="row">
-                        Enable order status SMS:
-                    </th>
+                    <th scope="row">SMS template</th>
                     <td>
-                        <input type="checkbox" name="enable-order-sms" id="toggle-sms" <?php checked($wpsms_template_option['enable_wc_order_sms'] ?? '' , "1") ?>>
+                        <?php 
+                            foreach($order_statuses as $status_slug => $status_label) { ?>
+                                <h4 style="margin-bottom: 0;"><?= $status_label ?></h4>
+                                <p><input type="checkbox" name="enable-sms-<?= $status_slug ?>" <?php checked($wpsms_template_option['wpsms_order_sms_templates']['enable_sms_'.$status_slug] ?? '' , "1") ?>>Enable</p><br>
+                                <textarea name="wpsms-order-sms-template-<?= $status_slug ?>" rows="5" cols="90" maxlength="255"><?= $wpsms_template_option['wpsms_order_sms_templates'][$status_slug] ?? '' ?></textarea><br>
+                           <?php }
+                        ?>
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row">SMS template</th>
+                    <th></th>
                     <td>
-                        <textarea name="wpsms-order-sms-template" rows="3" cols="66" maxlength="255"><?= $wpsms_template_option['wpsms_order_sms_template'] ?? '' ?></textarea><br>
                         <input type="hidden" name="action" value="wpsms_order_sms_template_option">
                         <?php wp_nonce_field('wpsms_send_sms_nonce', 'wpsms_send_sms_nonce') ?>
                         <button type="submit" class="button button-primary" style="margin-top: 10px;">Save</button>
