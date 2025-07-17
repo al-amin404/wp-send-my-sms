@@ -88,6 +88,11 @@ add_action('admin_post_wpsms_api_options','wpsms_api_options_save');
 //Send Custom SMS
 function wpsms_send_custom_sms() {
 
+    if(get_option('wpsms_api_options')['enable_sms'] !== '1') {
+        wp_safe_redirect(admin_url('admin.php?page=wpsms-send-my-sms&msg=Error! Enable SMS API first'));
+        exit;
+    }
+
     if(!isset($_POST['wpsms_send_sms_nonce']) || !wp_verify_nonce($_POST['wpsms_send_sms_nonce'], 'wpsms_send_sms_nonce')) {
         wp_die('Error security varification');
     }
