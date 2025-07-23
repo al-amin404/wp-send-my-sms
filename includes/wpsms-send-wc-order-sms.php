@@ -68,6 +68,17 @@ function wpsms_send_wc_order_sms($wpsms_template_option) {
         
         <div style="margin-top:30px;">
             <h2>Send a custom order SMS</h2>
+            <div <?= !empty($_GET['msg']) ? 
+                    "style='background-color:#fff;
+                        border:1px solid #c3c4c7;
+                        border-left-width:4px;
+                        border-left-color:#0a875a;
+                        box-shadow:0 1px 1px rgba(0,0,0,.04);
+                        padding:0 15px 0 5px;
+                        width: max-content;'" : ''  
+                ?> >
+                    <p><?= $_GET['msg'] ?? ''  ?></p>
+            </div>
             <form action="<?= admin_url('admin-post.php')?>" method="post">
                 <table class="form-table">
                     <tr>
@@ -75,25 +86,17 @@ function wpsms_send_wc_order_sms($wpsms_template_option) {
                             Order ID:
                         </th>
                         <td>
-                            <input type="number" name="wc-orderId" required><br>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">
-                            Receiver Mobile:
-                        </th>
-                        <td>
-                            <input type="tel" name="wpsms-rv-mobile" required><br>
+                            <input type="text" name="wc-orderId" required>
                         </td>
                     </tr>
                     <tr>
                         <th scope="row">Message</th>
                         <td>
-                            <textarea name="wpsms-custom-text" rows="5" cols="33" maxlength="255"></textarea>
+                            <textarea name="wpsms-custom-text" rows="5" cols="33" maxlength="255" required></textarea>
                         </td>
                     </tr>
                     <tr>
-                        <input type="hidden" name="action" value="wpsms_wc_custom_order_sms">
+                        <input type="hidden" name="action" value="wpsms_send_sms">
                         <?php wp_nonce_field('wpsms_send_sms_nonce', 'wpsms_send_sms_nonce') ?>
                         <td><button type="submit" class="button button-primary">Send SMS</button></td>
                     </tr>
