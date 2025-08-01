@@ -6,9 +6,11 @@
  * Author: Al Amin
  * Author URI: https://github.com/al-amin404/
  * Version: 1.0.0
- * License: GPL-2
+ * Requires PHP: V7.4
+ * License: GPLv2
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: wp-send-my-sms
+ * Domain Path: /languages
  */
 
  if ( ! defined("ABSPATH") ) exit;
@@ -51,6 +53,7 @@ function wpsms_admin_panel_content() {
     include_once (plugin_dir_path( __FILE__ ) .'includes/wpsms-send.php');
 }
 
+include_once (plugin_dir_path( __FILE__ ) .'includes/wpsms-order-notification.php');
 include_once (plugin_dir_path( __FILE__ ) .'includes/wpsms-send-wc-order-sms.php');
 
 
@@ -104,10 +107,14 @@ function wpsms_send_custom_sms() {
     $api_key = get_option('wpsms_api_options')['api_key'];
     $api_user = get_option('wpsms_api_options')['api_username'];
     $redirectUrl = 'wpsms-send-my-sms';
+    $params = [
+        'user' => $api_user,
+        'key' => $api_key
+    ];
 
     // Send WC custom SMS if OrderID exists
     if(isset($_POST['wc-orderId'])) {
-        $id = intval($_POST['wc-orderId']);
+        $id = absint($_POST['wc-orderId']);
         $order = wc_get_order($id);
 
         if(!$order) {
@@ -126,12 +133,8 @@ function wpsms_send_custom_sms() {
 
         $finalText = strtr($customSmsText, $replacements);
 
-        $params = [
-            'user' => $api_user,
-            'key' => $api_key,
-            'to' => $order->get_billing_phone(),
-            'msg' => urlencode($finalText)
-        ];
+        $params['to'] = $order->get_billing_phone();
+        $params['msg'] = urlencode($finalText);
 
         $url = 'https://sendmysms.net/api.php';
 
@@ -144,30 +147,24 @@ function wpsms_send_custom_sms() {
         $numbers = explode(',', sanitize_text_field($_POST['wpsms-rv-mobile']));
 
         foreach($numbers as $receiverNumber) {
-            $params = [
-                'user' => $api_user,
-                'key' => $api_key,
-                'to' => $receiverNumber,
-                'msg' => urlencode($customSmsText)
-            ];
+
+            $params['to'] = $receiverNumber;
+            $params['msg'] = urlencode($customSmsText);
+
             $url = 'https://sendmysms.net/api.php';
 
             $resContent = wp_remote_get(add_query_arg($params, $url));
         }
     }
+
     // for Normal non-bulk SMS
     else {
-        $receiverNumber = sanitize_text_field($_POST['wpsms-rv-mobile']);
-        $params = [
-            'user' => $api_user,
-            'key' => $api_key,
-            'to' => $receiverNumber,
-            'msg' => urlencode($customSmsText)
-        ];
-        $url = 'https://sendmysms.net/api.php';
+        $params['to'] = sanitize_text_field($_POST['wpsms-rv-mobile']);
+        $params['msg'] = urlencode($customSmsText);
 
+        $url = 'https://sendmysms.net/api.php';
         $resContent = wp_remote_get(add_query_arg($params, $url));
-    }
+    }//END if-else condition
     
     if (is_wp_error($resContent)) {
         $response = null;
@@ -176,10 +173,10 @@ function wpsms_send_custom_sms() {
         $response = json_decode($response, true);
     };
 
-    $status = $response['status'];
-    $msg = $response['response'];
+    $status = sanitize_text_field($response['status']);
+    $msg = sanitize_text_field($response['response']);
 
-    wp_safe_redirect(admin_url('admin.php?page='.$redirectUrl.'&msg='. $msg));
+    wp_safe_redirect(esc_url_raw(admin_url('admin.php?page='.$redirectUrl.'&msg='. $status. '! ' .$msg)));
     exit;
 }
 
