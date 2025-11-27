@@ -42,7 +42,12 @@ function wpsms_send_wc_order_sms($wpsms_template_option) {
         <form action="<?= esc_url(admin_url('admin-post.php'))?>" method="post">
             <table class="form-table">
                 <tr>
-                    <th scope="row"><?= esc_html__('SMS templates', 'wp-send-my-sms') ?></th>
+                    <th scope="row"><?= esc_html__('SMS templates', 'wp-send-my-sms') ?>
+                        <div class="tooltip">
+                            <span class="tooltip-icon"></span>
+                            <span class="tooltiptext">Write custom sms templates for order status. Available placeholders: {firstName}, {lastName}, {orderId}, {orderStatus}, {orderTotal}, {billingMobile}</span>
+                        </div>
+                    </th>
                     <td>
                         <?php 
                             foreach($order_statuses as $status_slug => $status_label) { ?>
@@ -82,13 +87,22 @@ function wpsms_send_wc_order_sms($wpsms_template_option) {
                     <tr>
                         <th scope="row">
                             <?= esc_html__('Order ID:', 'wp-send-my-sms') ?>
+                            <div class="tooltip">
+                                <span class="tooltip-icon"></span>
+                                <span class="tooltiptext">Enter the WooCommerce Order ID to which you want to send the SMS.</span>
+                            </div>
                         </th>
                         <td>
                             <input type="text" name="wc-orderId" required>
                         </td>
                     </tr>
                     <tr>
-                        <th scope="row"><?= esc_html__('Message:', 'wp-send-my-sms') ?></th>
+                        <th scope="row"><?= esc_html__('Message:', 'wp-send-my-sms') ?>
+                            <div class="tooltip">
+                                <span class="tooltip-icon"></span>
+                                <span class="tooltiptext">Write your message here. Available placeholders: {firstName}, {lastName}, {orderId}, {orderStatus}, {orderTotal}, {billingMobile}</span>
+                            </div>
+                        </th>
                         <td>
                             <textarea name="wpsms-custom-text" rows="5" cols="33" maxlength="255" required></textarea>
                         </td>

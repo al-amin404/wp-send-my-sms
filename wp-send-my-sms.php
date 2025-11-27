@@ -181,3 +181,14 @@ function wpsms_send_custom_sms() {
 }
 
 add_action('admin_post_wpsms_send_sms', 'wpsms_send_custom_sms');
+
+
+//Load assets for WC order SMS pages
+function wpsms_load_assets($hook_suffix) {
+    if($hook_suffix != 'send-sms_page_wpsms-send-wc-order-sms' && $hook_suffix != 'send-sms_page_wpsms-send-my-sms' && $hook_suffix != 'toplevel_page_wpsms-send-my-sms' && $hook_suffix != 'send-sms_page_wpsms-send-sms-settings') {
+        return;
+    }
+
+    wp_enqueue_style('wpsms-admin', plugin_dir_url(__FILE__) . 'assets/css/admin.css', [], '1.0.0', 'all');
+}
+add_action('admin_enqueue_scripts', 'wpsms_load_assets');

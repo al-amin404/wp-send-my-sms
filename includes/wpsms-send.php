@@ -43,7 +43,7 @@ $wpsms_options = get_option('wpsms_api_options');
                 <table class="form-table">
                     <tr>
                         <th scope="row">
-                            <?= __('Receiver Mobile:', 'wp-send-my-sms') ?>
+                            <?= __('Recipient Mobile:', 'wp-send-my-sms') ?>
                         </th>
                         <td>
                             <input type="tel" name="wpsms-rv-mobile" required><br>
@@ -54,7 +54,12 @@ $wpsms_options = get_option('wpsms_api_options');
                         </td>
                     </tr>
                     <tr>
-                        <th scope="row"><?= __('Message', 'wp-send-my-sms') ?></th>
+                        <th scope="row"><?= __('Message', 'wp-send-my-sms') ?>
+                            <div class="tooltip">
+                                <span class="tooltip-icon"></span>
+                                <span class="tooltiptext">Write a custom sms to any number.</span>
+                            </div>
+                        </th>
                         <td><textarea name="wpsms-custom-text" maxlength="255"></textarea></td>
                     </tr>
                     <tr>
